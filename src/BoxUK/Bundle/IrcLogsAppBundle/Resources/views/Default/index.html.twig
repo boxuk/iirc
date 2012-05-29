@@ -1,0 +1,53 @@
+{% extends '::base.html.twig' %}
+
+{% import 'BoxUKIrcLogsAppBundle::macro.html.twig' as macro %}
+
+{% block body %}
+
+<h1>Box UK IRC Logs</h1>
+
+<p>Welcome to the Box UK IRC logs search interface. This app allows you to search back through the mists of time for
+all sorts of vital information...</p>
+
+<div class="row">
+    <div class="span4">
+        {{ macro.searchForm(form, false) }}
+        </div>
+    <div class="span8">
+
+        <h2>How to connect</h2>
+        <p>Getting on IRC and joining in is easy...</p>
+
+        <h3>Step 1: Download a client</h3>
+        <p>Firts you'll need to download an IRC client and install it. Some popular ones...</p>
+
+        <ul>
+            <li><b>Windows:</b>
+                <ul>
+                    <li><a href="http://xchat.org/">XChat</a></li>
+                    <li><a href="http://www.mirc.com/">Mirc</a></li>
+                </ul>
+            </li>
+            <li><b>Mac:</b>
+                <ul>
+                    <li><a href="http://limechat.net/mac/">Limechat</a></li>
+                    <li><a href="http://colloquy.info/">Colloquy</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>Step 2: Connect!</h3>
+        <p>Different clients have different dialogs for configuring connections, but the details you'll need to put
+        in somewhere will be:</p>
+
+        <ul>
+            <li><b>Login name:</b> Your network username</li>
+            <li><b>Server:</b> irc.hq.boxuk.net</li>
+        </ul>
+
+        <p>Then when prompted for your password it's your network one.</p>
+
+    </div>
+</div>
+
+{% endblock %}

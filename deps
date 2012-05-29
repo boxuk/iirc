@@ -1,0 +1,98 @@
+[symfony]
+    git=git://github.com/symfony/symfony.git
+    version=v2.0.13
+
+[twig]
+    git=git://github.com/fabpot/Twig.git
+    version=v1.7.0
+
+[monolog]
+    git=git://github.com/Seldaek/monolog.git
+    version=1.0.2
+
+[doctrine-common]
+    git=git://github.com/doctrine/common.git
+    version=2.1.4
+
+[doctrine-dbal]
+    git=git://github.com/doctrine/dbal.git
+    version=2.1.6
+
+[doctrine]
+    git=git://github.com/doctrine/doctrine2.git
+    version=2.1.6
+
+[swiftmailer]
+    git=git://github.com/swiftmailer/swiftmailer.git
+    version=v4.1.7
+
+[assetic]
+    git=git://github.com/kriswallsmith/assetic.git
+    version=v1.0.3
+
+[twig-extensions]
+    git=git://github.com/fabpot/Twig-extensions.git
+
+[metadata]
+    git=git://github.com/schmittjoh/metadata.git
+    version=1.0.0
+
+[SensioFrameworkExtraBundle]
+    git=git://github.com/sensio/SensioFrameworkExtraBundle.git
+    target=/bundles/Sensio/Bundle/FrameworkExtraBundle
+    version=origin/2.0
+
+[JMSSecurityExtraBundle]
+    git=git://github.com/schmittjoh/JMSSecurityExtraBundle.git
+    target=/bundles/JMS/SecurityExtraBundle
+    version=origin/1.0.x
+
+[SensioDistributionBundle]
+    git=git://github.com/sensio/SensioDistributionBundle.git
+    target=/bundles/Sensio/Bundle/DistributionBundle
+    version=origin/2.0
+
+[SensioGeneratorBundle]
+    git=git://github.com/sensio/SensioGeneratorBundle.git
+    target=/bundles/Sensio/Bundle/GeneratorBundle
+    version=origin/2.0
+
+[AsseticBundle]
+    git=git://github.com/symfony/AsseticBundle.git
+    target=/bundles/Symfony/Bundle/AsseticBundle
+    version=v1.0.1
+
+[solarium]
+    git=git://github.com/basdenooijer/solarium.git
+    version=2.4.0
+
+[NelmioSolariumBundle]
+    git=git://github.com/nelmio/NelmioSolariumBundle.git
+    target=/bundles/Nelmio/SolariumBundle
+
+[knp-components]
+    git=git://github.com/KnpLabs/knp-components.git
+
+[KnpPaginatorBundle]
+    git=git://github.com/KnpLabs/KnpPaginatorBundle.git
+    target=bundles/Knp/Bundle/PaginatorBundle
+
+[KnpMenu]
+    git=git://github.com/KnpLabs/KnpMenu.git
+
+[KnpMenuBundle]
+    git=git://github.com/KnpLabs/KnpMenuBundle.git
+    target=bundles/Knp/Bundle/MenuBundle
+
+[MopaBootstrapBundle]
+    git=git://github.com/phiamo/MopaBootstrapBundle.git
+    target=/bundles/Mopa/BootstrapBundle
+    version=origin/v2.x_sf2.0
+
+[JMSDebuggingBundle]
+    git=git://github.com/schmittjoh/JMSDebuggingBundle.git
+    target=/bundles/JMS/DebuggingBundle
+
+[LiipMonitorBundle]
+    git=git://github.com/liip/LiipMonitorBundle.git
+    target=bundles/Liip/MonitorBundle

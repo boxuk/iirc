@@ -1,0 +1,8 @@
+BoxUKIrcLogsAppBundle:
+    resource: "@BoxUKIrcLogsAppBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+_monitor:
+    resource: "@LiipMonitorBundle/Resources/config/routing.yml"
+    prefix: /health

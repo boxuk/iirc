@@ -1,0 +1,23 @@
+{% macro searchForm(form, inline) %}
+
+{% set formClass = (inline) ? 'form-inline' : '' %}
+
+<form action="{{ path('search') }}" method="get" class="{{ formClass }}" {{ form_enctype(form) }}>
+    
+    {% if inline %}
+        
+        {{ form_widget(form.query, { attr: { 'placeholder':'Query' } }) }}
+        {{ form_widget(form.channel, { attr: { 'class':'span2', 'placeholder':'Channel' } }) }}
+        {{ form_widget(form.from, { attr: { 'class':'span2', 'placeholder':'From' } }) }}
+        {{ form_widget(form.to, { attr: { 'class':'span2', 'placeholder':'To' } }) }}
+        {{ form_widget(form.nick, { attr: { 'class':'span2', 'placeholder':'Nick' } }) }}
+
+    {% else %}
+
+        {{ form_widget(form) }}
+
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+{% endmacro %}

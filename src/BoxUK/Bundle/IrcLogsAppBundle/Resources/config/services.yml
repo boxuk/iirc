@@ -1,0 +1,46 @@
+parameters:
+    box_uk_irc_logs_app.solr_repository.class: BoxUK\Bundle\IrcLogsAppBundle\Solr\SolrRepository
+    box_uk_irc_logs_app.twig.inlineextension.class: BoxUK\Bundle\IrcLogsAppBundle\Twig\InlineExtension
+
+services:
+    box_uk_irc_logs_app.solr_repository:
+        class: %box_uk_irc_logs_app.solr_repository.class%
+        arguments: [@solarium.client]
+        calls:
+            - [ setContainer, [ @service_container ] ]
+
+    app.navbar:
+        class: '%mopa_bootstrap.navbar.generic%'
+        scope: request
+        arguments:
+            - "Box UK IRC Logs"
+            - true
+            - "home"
+            - '@app.navbar_main_menu'
+        tags:
+            - { name: mopa_bootstrap.navbar, alias: frontendNavbar }
+
+    app.navbar_menu_builder:
+        class: BoxUK\Bundle\IrcLogsAppBundle\Menu\NavbarMenuBuilder
+        arguments: [@knp_menu.factory, @box_uk_irc_logs_app.solr_repository]
+
+    app.navbar_main_menu:
+        class: Knp\Menu\MenuItem
+        factory_service: app.navbar_menu_builder
+        factory_method: createMainMenu
+        arguments: [ '@request' ]
+        scope: request
+        tags:
+            - { name: knp_menu.menu, alias: main }
+
+    monitor.check.solr:
+        class: BoxUK\Bundle\IrcLogsAppBundle\Check\SolrCheck
+        arguments: [@solarium.client]
+        tags:
+            - { name: monitor.check }
+
+    box_uk_irc_logs_app.twig.inlineextension:
+        class: '%box_uk_irc_logs_app.twig.inlineextension.class%'
+        public: false
+        tags:
+             - { name: 'twig.extension' }

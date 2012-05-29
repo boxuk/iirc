@@ -1,0 +1,25 @@
+
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
+<input type="search" id="filter" placeholder="Filter messages" />
+
+<h2>#{{ channel }} logs for {{ logdate }}</h2>
+
+<ul class="lines">
+{% for line in lines %}
+    <li class="line" id="line-{{ line.lineNumber }}">
+        <a class="date" href="#{{ line.lineNumber }}">{{ line.datetime|date("H:i:s") }}</a>
+        <span class="author" rel="tooltip" data-original-title="{{ line.username }}">
+            {{ line.nick }}
+            <span></span>
+        </span>
+        <span class="message">{{ line.message|escape|inlinify }}</span>
+        <span class="clearer"></span>
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}
+

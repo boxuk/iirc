@@ -1,0 +1,38 @@
+{% extends '::base.html.twig' %}
+
+{% import 'BoxUKIrcLogsAppBundle::macro.html.twig' as macro %}
+
+{% block body %}
+
+<h1>Search Results</h1>
+
+{{ macro.searchForm(form, true) }}
+
+<p>The following messages matched your search.</p>
+
+<p><span class="alert alert-info">BRO TIP: Hover over the message to quickly see it in context.</span></p>
+
+<table class="table table-striped results">
+    <tr>
+        <th class="span2">Nick</th>
+        <th class="span2">Date</th>
+        <th>Message</th>
+        <th class="span2"></th>
+    </tr>
+    {% for document in pagination %}
+        <tr>
+            <td rel="tooltip" data-original-title="{{ document.username }}">{{ document.nick }}</td>
+            <td>{{ document.datetime|date('d/m/Y H:i:s') }}</td>
+            <td class="message" rel="popover" data-placement="left" data-title="Context" data-content="{{ document.context|escape|nl2br }}">{{ document.message|escape }}</td>
+            <td>
+                <a class="btn" href="{{ path('log', {'channel': document.channel, 'date': document.datetime|date('d-m-Y')}) }}#{{ document.lineNumber }}">View log</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<div class="navigation">
+    {{ pagination.render()|raw }}
+</div>
+
+{% endblock %}

@@ -42,7 +42,7 @@ $(function() {
         return parseInt( str, 10 );
     }
 
-    /=============== line selections =====================*/
+    /*=============== line selections =====================*/
 
     function lineClicked( e ) {
         var link = $( this );

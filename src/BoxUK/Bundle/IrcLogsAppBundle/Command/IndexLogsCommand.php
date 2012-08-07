@@ -58,6 +58,28 @@ class IndexLogsCommand extends ContainerAwareCommand
     }
 
     /**
+     * Clear all search indexes
+     *
+     */
+    protected function clearIndex()
+    {
+        $update = $this->solarium->createUpdate();
+        $update->addDeleteQuery('*:*');
+        $update->addCommit();
+
+        $this->solarium->update($update);
+    }
+
+    protected function getIndexer( InputInterface $input, OutputInterface $output )
+    {
+        return new DefaultIndexer(
+            $input,
+            $output,
+            $this->getContainer()->getParameter('irc_log_file')
+        );
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -67,12 +89,7 @@ class IndexLogsCommand extends ContainerAwareCommand
 
         if ($force) {
             $output->writeln('<info>Deleting existing index</info>');
-
-            $update = $this->solarium->createUpdate();
-            $update->addDeleteQuery('*:*');
-            $update->addCommit();
-
-            $this->solarium->update($update);
+            $this->clearIndex();
         }
 
         $buffer = $this->solarium->getPlugin('bufferedadd');
@@ -80,22 +97,17 @@ class IndexLogsCommand extends ContainerAwareCommand
         $buffer->setBufferSize(100);
         $helper = new \Solarium_Query_Helper();
 
-        $logFile = $this->getContainer()->getParameter('irc_log_file');
-
-
-        $output->writeln('<info>Indexing: </info>' . $logFile . '');
-
-        if (false === $reader = new BackwardsFileReader($logFile)) {
-            $output->writeln('<error>Failed to open file: ' . $logFile . '.</error>');
-            return;
-        }
-
         $lastIndexedDate = $this->solr->getLastIndexedDate();
+
+        $indexer = $this->getIndexer( $input, $output );
+        $indexer->init(
+            $this->solr->getLastIndexedDate()
+        );
 
         $documents = array();
 
         try {
-            while ($line = $reader->readLine()) {
+            while ($message = $indexer->read()) {
 
                 preg_match(self::getLogFormatRegex(), $line, $matches);
 
@@ -134,7 +146,7 @@ class IndexLogsCommand extends ContainerAwareCommand
             $output->writeln('<error>Failed to read file. Exception: ' . $e->getMessage() . '</error>');
         }
 
-        // reverse to line numbers are correct
+        // reverse so line numbers are correct
         foreach (array_reverse($documents) as $document) {
 
             $document['lineNumber'] = $this->lineNumberFor($document['channel'], $document['datetime']);

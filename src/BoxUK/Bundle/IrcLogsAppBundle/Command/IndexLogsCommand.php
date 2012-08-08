@@ -39,7 +39,7 @@ class IndexLogsCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('irc-logs:index')
+            ->setName('iirc:index')
             ->setDefinition(array(
             new InputOption('force', null, InputOption::VALUE_NONE, 'Force a re-indexing of all packages'),
         ))

@@ -56,6 +56,49 @@ class IndexLogsCommand extends ContainerAwareCommand
         $this->solr = $this->getContainer()->get('box_uk_irc_logs_app.solr_repository');
         $this->solarium = $this->solr->getSolarium();
     }
+    /**
+     *
+     * @param InputInterface  $input  An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance\
+     *
+     * @return array
+     */
+    protected function getLogFiles(InputInterface $input, OutputInterface $output) {
+
+        $logFileDir = $this->getContainer()->getParameter('irc_log_file_directory');
+
+        $output->writeln('<info>Indexing directory: </info>' . $logFileDir . '');
+
+        $finder = new Finder();
+        $finder->in($logFileDir)->files()->name('*.log');
+
+        $sort = function (\SplFileInfo $a, \SplFileInfo $b)
+        {
+
+            $regex = '/^#\w+(?<date>\[(?<year>\d{4})\.(?<month>\d{2})\.(?<day>\d{2})\])?.log$/';
+            preg_match($regex, $a->getFilename(), $aMatch);
+            preg_match($regex, $b->getFilename(), $bMatch);
+
+            $aDate = date_create()->setTime(0,0,0);
+            if (array_key_exists('date', $aMatch)) {
+                $aDate->setDate($aMatch['year'], $aMatch['month'], $aMatch['day']);
+            }
+            $bDate = date_create()->setTime(0,0,0);
+            if (array_key_exists('date', $bMatch)) {
+                $bDate->setDate($bMatch['year'], $bMatch['month'], $bMatch['day']);
+            }
+
+            if ($aDate == $bDate) {
+                return 0;
+            }
+
+            return $aDate < $bDate ? 1 : -1;
+        };
+
+        $finder->sort($sort);
+
+        return iterator_to_array($finder->getIterator());
+    }
 
     /**
      * {@inheritdoc}
@@ -80,58 +123,54 @@ class IndexLogsCommand extends ContainerAwareCommand
         $buffer->setBufferSize(100);
         $helper = new \Solarium_Query_Helper();
 
-        $logFile = $this->getContainer()->getParameter('irc_log_file');
-
-
-        $output->writeln('<info>Indexing: </info>' . $logFile . '');
-
-        if (false === $reader = new BackwardsFileReader($logFile)) {
-            $output->writeln('<error>Failed to open file: ' . $logFile . '.</error>');
-            return;
-        }
-
-        $lastIndexedDate = $this->solr->getLastIndexedDate();
-
         $documents = array();
 
-        try {
-            while ($line = $reader->readLine()) {
+        foreach ($this->getLogFiles($input, $output) as $file) {
 
-                preg_match(self::getLogFormatRegex(), $line, $matches);
-
-                if (!$matches) {
-                    //$output->writeln('<error>Regex failed for line: ' . $line . '.</error>');
-                    continue;
-                }
-
-                $document =  $this->updateDocumentFromFile($matches);
-
-                if ($lastIndexedDate && $lastIndexedDate >= $document['datetime']) {
-
-                    // don't go beyond our last known indexed datetime
-                    if ($lastIndexedDate > $document['datetime']) {
-                        break;
-                    }
-
-                    // because messages can appear on the same date time (maximum log precision = seconds)
-                    // we have to check we haven't seen this specific line before, to prevent indexing
-                    // duplicate rows
-                    if ($lastIndexedDate == $document['datetime'] && $this->lineAlreadyIndexed($document['id'])) {
-                        break;
-                    }
-
-                }
-
-
-
-
-
-                $documents[] = $document;
-
+            if (false === $reader = new BackwardsFileReader($file)) {
+                $output->writeln('<error>Failed to open file: ' . $file . '.</error>');
+                continue;
             }
 
-        } catch (\Exception $e) {
-            $output->writeln('<error>Failed to read file. Exception: ' . $e->getMessage() . '</error>');
+            $output->writeln('  <info>Indexing : </info>' . $file . '');
+
+            $lastIndexedDate = $this->solr->getLastIndexedDate();
+
+            try {
+                while ($line = $reader->readLine()) {
+
+                    preg_match(self::getLogFormatRegex(), $line, $matches);
+
+                    if (!$matches) {
+                        //$output->writeln('<error>Regex failed for line: ' . $line . '.</error>');
+                        continue;
+                    }
+
+                    $document = $this->updateDocumentFromFile($matches);
+
+                    if ($lastIndexedDate && $lastIndexedDate >= $document['datetime']) {
+
+                        // don't go beyond our last known indexed datetime
+                        if ($lastIndexedDate > $document['datetime']) {
+                            break;
+                        }
+
+                        // because messages can appear on the same date time (maximum log precision = seconds)
+                        // we have to check we haven't seen this specific line before, to prevent indexing
+                        // duplicate rows
+                        if ($lastIndexedDate == $document['datetime'] && $this->lineAlreadyIndexed($document['id'])) {
+                            break;
+                        }
+
+                    }
+
+                    $documents[] = $document;
+
+                }
+
+            } catch (\Exception $e) {
+                $output->writeln('<error>Failed to read file. Exception: ' . $e->getMessage() . '</error>');
+            }
         }
 
         // reverse to line numbers are correct
@@ -242,11 +281,11 @@ class IndexLogsCommand extends ContainerAwareCommand
     {
         return <<<EOF
         /^
-        (?<date>\w+\s+\w+\s+\d+\s+\d+:\d+:\d+\s\d+):
+        \[(?<date>\w+\s+\w+\s+\d+\s+\d+:\d+:\d+\s\d+)\]
         \s\#
-        (?<channel>[^:]*):\s<
-        (?<nick>[^!]*)!
-        (?<username>[^@]*)@[^>]*>\s
+        (?<channel>[^\s]*)\s
+        (?<nick>[^\s]*)\s
+        (?<username>[^@]*)@[^\s]*\s
         (?<message>.+)
         $/mx
 EOF;

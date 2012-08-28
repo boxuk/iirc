@@ -18,7 +18,7 @@
 
     secret            = ThisTokenIsNotSoSecretChangeIt
 
-    irc_log_file      = /path/to/the/log
+    irc_log_file_directory      = /path/to/the/log
 
     solr_host         = 127.0.0.1
     solr_port         = 8080

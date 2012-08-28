@@ -89,10 +89,6 @@
     target=/bundles/Mopa/BootstrapBundle
     version=origin/v2.x_sf2.0
 
-[JMSDebuggingBundle]
-    git=git://github.com/schmittjoh/JMSDebuggingBundle.git
-    target=/bundles/JMS/DebuggingBundle
-
 [LiipMonitorBundle]
     git=git://github.com/liip/LiipMonitorBundle.git
     target=bundles/Liip/MonitorBundle

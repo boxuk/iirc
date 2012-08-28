@@ -180,7 +180,7 @@ class SolrRepository extends ContainerAware
             }
         }
 
-        return $dates;
+        return array_reverse($dates);
     }
 
     /**
